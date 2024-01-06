@@ -1,5 +1,6 @@
 from flask import Flask, request
 from dotenv import load_dotenv
+from make_payment import initiate_payment
 import os
 
 load_dotenv()
@@ -21,14 +22,9 @@ def ussd_callback():
         response += "2. Check Donation History"
     elif text == '1':
         response = "CON Enter Amount You Wish To Donate\n"
-        response += "1. Account number \n"
-        response += "2. Account balance"
-    elif text == '1*1':
-        accountNumber  = "ACC1001"
-        response = "END Your account number is " + accountNumber
-    elif text == '1*2':
-        balance  = "KES 10,000"
-        response = "END Your balance is " + balance
+    elif text.startswith('1*'):
+        amount = text.split('*')[1]
+        response = initiate_payment(amount, phone_number, session_id)
     elif text == '2':
         response = "END This is your phone number " + phone_number
 
