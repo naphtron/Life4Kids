@@ -16,11 +16,11 @@ def ussd_callback():
     phone_number = request.values.get("phoneNumber", None)
     text = request.values.get("text", "default")
     if text == '':
-        response  = "CON What would you want to check \n"
-        response += "1. My Account \n"
-        response += "2. My phone number"
+        response  = "CON Welcome to Life4Kids Donations\n"
+        response += "1. Make a Donation \n"
+        response += "2. Check Donation History"
     elif text == '1':
-        response = "CON Choose account information you want to view \n"
+        response = "CON Enter Amount You Wish To Donate\n"
         response += "1. Account number \n"
         response += "2. Account balance"
     elif text == '1*1':
