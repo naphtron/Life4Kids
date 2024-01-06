@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-request = ""
+
 ######
-def getAccessToken(request):
+def getAccessToken():
     consumer_key = os.getenv('CONSUMER_KEY')
     consumer_secret = os.getenv('CONSUMER_SECRET')
     api_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
@@ -17,5 +17,4 @@ def getAccessToken(request):
     validated_mpesa_access_token = mpesa_access_token['access_token']
     print(f'Access token{mpesa_access_token}')
     print(f'Validated access token: {validated_mpesa_access_token}')
-
-getAccessToken(request)
+    return validated_mpesa_access_token

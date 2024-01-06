@@ -25,8 +25,9 @@ def ussd_callback():
     elif text.startswith('1*'):
         amount = text.split('*')[1]
         response = initiate_payment(amount, phone_number, session_id)
+        response = f"You will a confirmation message KES{amount} Donation"
     elif text == '2':
-        response = "END This is your phone number " + phone_number
+        response = " END To be implemented " + phone_number
 
     return response
 
