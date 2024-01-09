@@ -26,7 +26,7 @@ def initiate_payment(amount,phone_number,session_id):
         Amount = int(amount)
         PartyA = int(phone_number[1:])
         PhoneNumber = int(phone_number[1:])
-        CallBackURL = 'https://016f-196-250-209-182.ngrok-free.app/'
+        CallBackURL = 'https://016f-196-250-209-182.ngrok-free.app/callback'
         acc_ref = "Life4Kids"
         TransactionDesc = "Donation"
         request_url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
@@ -37,9 +37,9 @@ def initiate_payment(amount,phone_number,session_id):
         "Timestamp": Timestamp,
         "TransactionType": TransactionType,
         "Amount": Amount,
-        "PartyA": PartyA,
+        "PartyA": 254707479652,
         "PartyB": BusinessShortCode,
-        "PhoneNumber":PhoneNumber ,
+        "PhoneNumber":254707479652 ,
         "CallBackURL": CallBackURL,
         "AccountReference": acc_ref,
         "TransactionDesc": TransactionDesc 
