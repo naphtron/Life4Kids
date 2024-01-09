@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from make_payment import initiate_payment
+from send_sms import SMS
 from datetime import datetime
 import os
 
@@ -42,12 +43,16 @@ def handle_callback():
             ResultCode = data['Body']['stkCallback']['ResultCode']
             ResultDesc = data['Body']['stkCallback']['ResultDesc']
             Items = data['Body']['stkCallback']['CallbackMetadata']['Item']
+
+            #instantiate sms object
+            sendSMS = SMS()
             if ResultCode == 0:
                 amount = Items[0]['Value']
                 mpesa_receipt_number = Items[1]['Value']
                 transaction_date = datetime.strptime(Items[2]['Value'])
                 phone_number = Items[3]['Value']
-
+                message = f"Your KES{amount} donation has been received.\nThank you for supporting Life4Kids💙"
+                sendSMS.send(phone_number,message)
             else:
                 print(f"Result Code: {ResultCode}\n")
                 print(f"Result Desc: {ResultDesc}")
