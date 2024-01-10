@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from make_payment import initiate_payment
 from send_sms import SMS
@@ -8,12 +9,40 @@ import os
 load_dotenv()
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+#instantiate sms object
+sendSMS = SMS()
+
+class Donation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer)
+    phone_number = db.Column(db.Integer, nullable=False)
+    amount = db.Column(db.Integer, nullable=False)
+    mpesa_receipt_number = db.Column(db.String(15))
+    transaction_date = db.Column(db.DateTime)
+
+def get_user_data(phone_number):
+    # Query a user by email or username
+    donations = Donation.query.filter((Donation.phone_number == phone_number)).all()
+    for donation in donations:
+        # Return user information as a dictionary
+        donation_info = "Donation History\n"
+        donation_info += f'Date: {donation.transaction_date.strftime("%d/%m/%Y %H:%M")}\n'
+        donation_info += f'Amount: KES{donation.amount}'
+
+        return donation_info
+    else:
+        return None
 
 response = ""
 
 @app.route('/', methods=['POST', 'GET'])
 def ussd_callback():
     global response
+    global session_id
     session_id = request.values.get("sessionId", None)
     service_code = request.values.get("serviceCode", None)
     phone_number = request.values.get("phoneNumber", None)
@@ -29,10 +58,17 @@ def ussd_callback():
         response = initiate_payment(amount, phone_number, session_id)
         response = f"END You will receive a confirmation message KES{amount} Donation"
     elif text == '2':
-        response = " END To be implemented " + phone_number
-
+        response = "Your donation history details will be forwarded to you shortly."
+        res = get_user_data(f'{str(phone_number)}')
+        if res:
+            sendSMS.send(f'{str(phone_number)}',res)
+            print("Success")
+        else:
+            sendSMS.send(f'{str(phone_number)}',"You have made no donations yet")
+            print("Success: No Dons")
     return response
-@app.route('/callback')
+
+@app.route('/callback', methods=['POST','GET'])
 def handle_callback():
     content_type = request.headers.get('Content-Type')
 
@@ -44,15 +80,18 @@ def handle_callback():
             ResultDesc = data['Body']['stkCallback']['ResultDesc']
             Items = data['Body']['stkCallback']['CallbackMetadata']['Item']
 
-            #instantiate sms object
-            sendSMS = SMS()
+            
             if ResultCode == 0:
                 amount = Items[0]['Value']
                 mpesa_receipt_number = Items[1]['Value']
-                transaction_date = datetime.strptime(Items[2]['Value'])
-                phone_number = Items[3]['Value']
-                message = f"Your KES{amount} donation has been received.\nThank you for supporting Life4Kids💙"
+                transaction_date = datetime.strptime(str(Items[3]['Value']),"%Y%m%d%H%M%S")
+                phone_number = Items[4]['Value']
+                phone_number = f'+{str(phone_number)}'
+                message = f"Your KES{int(amount)} donation has been received.\nThank you for supporting Life4Kids 💙"
                 sendSMS.send(phone_number,message)
+                new_donation = Donation(session_id=session_id, phone_number=phone_number, amount=amount, transaction_date=transaction_date)
+                db.session.add(new_donation)
+                db.session.commit()
             else:
                 print(f"Result Code: {ResultCode}\n")
                 print(f"Result Desc: {ResultDesc}")
@@ -65,6 +104,8 @@ def handle_callback():
     else:
         return jsonify({'status': 'error', 'message': 'Unsupported Content-Type'}), 415
 
+with app.app_context():
+    db.create_all()
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=os.getenv('PORT'))
+    app.run(host="0.0.0.0", port=os.getenv('PORT'), debug=True)
