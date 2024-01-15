@@ -43,10 +43,12 @@ response = ""
 def ussd_callback():
     global response
     global session_id
-    session_id = request.values.get("sessionId", None)
-    service_code = request.values.get("serviceCode", None)
-    phone_number = request.values.get("phoneNumber", None)
-    text = request.values.get("text", "default")
+    data = request.get_json()
+    session_id = data.get("sessionId", None)
+    service_code = data.get("serviceCode", None)
+    phone_number = data.get("phoneNumber", None)
+    text = data.get("text", "default")
+    print(session_id, service_code, phone_number, text)
     if text == '':
         response  = "CON Welcome to Life4Kids Donations\n"
         response += "1. Make a Donation \n"

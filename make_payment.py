@@ -25,7 +25,6 @@ def initiate_payment(amount,phone_number,session_id):
         TransactionType = 'CustomerPayBillOnline'
         Amount = int(amount)
         PartyA = int(phone_number[1:])
-        PhoneNumber = int(phone_number[1:])
         CallBackURL = 'https://e70e-196-250-209-186.ngrok-free.app/callback'
         acc_ref = "Life4Kids"
         TransactionDesc = "Donation"
@@ -37,9 +36,9 @@ def initiate_payment(amount,phone_number,session_id):
         "Timestamp": Timestamp,
         "TransactionType": TransactionType,
         "Amount": Amount,
-        "PartyA": 254707479652,
+        "PartyA": 254715702887,
         "PartyB": BusinessShortCode,
-        "PhoneNumber":254707479652 ,
+        "PhoneNumber":254715702887 ,
         "CallBackURL": CallBackURL,
         "AccountReference": acc_ref,
         "TransactionDesc": TransactionDesc 
