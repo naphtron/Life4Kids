@@ -90,4 +90,4 @@ This SDK will be configured using the API key to interact with Africa's Talking 
 2. Specify this port number in your `.env` file with the corresponding variable name.
 
 ## Conclusion
-If you have any suggestions, encounter any issues, or would like to contribute to the project, please don't hesitate to (reach out)[mailto🧑‍🚀]. You can submit feedback, bug reports, or feature requests through our GitHub repository's issue tracker.
+If you have any suggestions, encounter any issues, or would like to contribute to the project, please don't hesitate to [reach out](mailto:ronymu2gi@gmail.com).
