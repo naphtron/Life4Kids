@@ -35,6 +35,6 @@ class SMS:
         except Exception as e:
             print ('Encountered an error while sending: %s' % str(e))
 
-# SMS().send("+254715702887","Hello")
+# SMS().send("+2547*57*28*7","Hello")
 # if __name__ == '__main__':
 #     SMS().send()
